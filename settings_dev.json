@@ -1,0 +1,13 @@
+{
+  "name": "K-CDK",
+  "command": "/testcdk",
+  "ssmparametertokenkey": "/apps/slack_app/k_cdk/token",
+  "access": {
+    "TODO_workspace_domain": {
+      "team_id": "TODO_team_id",
+      "channels": {
+        "TODO_channel_id": "test-suite"
+      }
+    }
+  }
+}
