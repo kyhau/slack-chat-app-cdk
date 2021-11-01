@@ -21,17 +21,18 @@ app_name = stage_settings["name"]
 
 app = App()
 
-SlackAppConstructsStack(
+app_stack = SlackAppConstructsStack(
     app,
-    f"{app_name}-SlackApp",
-    stage_settings,
+    id=f"{app_name}-SlackChatApp",
+    settings=stage_settings,
     env=Environment(**stage_env)
 )
 
 SlackAppOAuthConstructsStack(
     app,
-    f"{app_name}-SlackAppSharing",
-    stage_settings,
+    id=f"{app_name}-SlackChatAppSharing",
+    oauth_table=app_stack.oauth_table,
+    settings=stage_settings,
     env=Environment(**stage_env)
 )
 

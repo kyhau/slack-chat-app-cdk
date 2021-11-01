@@ -5,8 +5,8 @@ with open("README.md") as fp:
 
 setuptools.setup(
     name="slack_app_constructs_cdk",
-    version="0.2.0",
-    description="A CDK Python app",
+    version="0.1.0",
+    description="A CDK Python app for deploying a Slack Chat App",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Kay Hau",
@@ -29,6 +29,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Code Generators",
         "Topic :: Utilities",
         "Typing :: Typed",
