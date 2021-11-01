@@ -1,13 +1,10 @@
-0.2.0 - 2021-06-05
+0.1.0 - 2021-11-01
 ==================
-1. New stack `cdk deploy K-CDK-SlackApp-OAuth` to support OAuth 2.0 flow.
+Initial version of Slack Chat App.
 
-0.1.0 - 2021-05-15
-==================
-Initial version
-1. Implemented the CDK package [slack_app_constructs_cdk/](slack_app_constructs_cdk/) and app.py for creating
-    1. An API Gateway to provide an endpoint to be invoked from a Slack Command.
-    2. A Lambda Function [ImmediateResponse.py](lambda/ImmediateResponse.py) to perform authentication, some basic checks and send an intermediate response to Slack within 3 seconds (Slack requirement).
-    3. A Lambda Function [AsyncWorker.py](lambda/AsyncWorker.py) to perform actual operation which may take more than 3 seconds to finish.
-    4. A Lambda Function [SyncWorker.py](lambda/SyncWorker.py) to perform actual operation which will be finished in less than 3 seconds.
-2. Added steps to test the Lambda code locally with sam-beta-cdk.
+The Slack App can handle requests triggered from a `app_mentions:read` event, which will take longer than [3 seconds](https://api.slack.com/events-api) to process, and posts the details back to the user using `chat:write` API.
+
+Two components (APIs) created:
+1. A Slack Chat App/Bot with AWS API Gateway, Lambda Functions, and DynamoDB table, being deployed with [CDK v2](https://docs.aws.amazon.com/cdk/latest/guide/work-with-cdk-v2.html) and tested wth SAM CLI ([sam-beta-cdk](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-cdk-getting-started.html)).
+
+2. An OAuth 2.0 authorization flow service for sharing the Slack App with other Workspaces without registering in the public Slack App Directory. For details see "Apps distributed to multiple workspaces" in [Distributing Slack apps](https://api.slack.com/start/distributing#multi_workspace_apps). This stack includes an AWS API Gateway, and a Lambda Function with AWS WAF (optional).
