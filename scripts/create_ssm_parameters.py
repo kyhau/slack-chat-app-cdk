@@ -2,7 +2,6 @@ import boto3
 
 AWS_REGION = "ap-southeast-2"
 DATA = {
-    "bot_user_oauth_token": None,  # Slack Bot User OAuth Token
     "verification_token": None,  # Slack Verification Token
     "client_id": None,  # optional: required for deploying K-CDK-SlackChatApp-OAuth for app sharing with oauth 2.0
     "client_secret": None,  # optional: required for deploying K-CDK-SlackChatApp-OAuth for app sharing with oauth 2.0
