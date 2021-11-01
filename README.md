@@ -1,6 +1,6 @@
 # slack-chat-app-cdk
 
-[![githubactions](https://github.com/kyhau/slack-chat-app-cdk/workflows/Build-Test/badge.svg)](https://github.com/kyhau/slack-chat-app-cdk/actions)
+[![githubactions](https://github.com/kyhau/slack-chat-app-cdk/workflows/build-slackapp/badge.svg)](https://github.com/kyhau/slack-chat-app-cdk/actions)
 
 This repo creates a Slack Chat App/bot that responds to messages when the app is mentioned (i.e. `@<app-name>`) and sends the response to the corresponding thread.
 
