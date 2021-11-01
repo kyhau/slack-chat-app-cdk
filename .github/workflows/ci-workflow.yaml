@@ -1,0 +1,34 @@
+name: build-slackapp
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set up build environment
+      run: |
+        sudo npm install -g aws-cdk@next
+        python -m pip install -U pip virtualenv
+        pip install -r requirements.txt
+
+    - name: Run flake8 lint, unit tests
+      run: |
+        flake8 --ignore E501,F541,W605 lambda/ slack_app_constructs_cdk/ scripts/*.py
+        echo "INFO: Run unit tests"
+        python lambda/AsyncWorker.test.py
+        python lambda/ImmediateResponse.test.py
+        python lambda/OAuth.test.py
+        python lambda/SyncWorker.test.py
