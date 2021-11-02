@@ -6,7 +6,7 @@ with open("README.md") as fp:
 setuptools.setup(
     name="slack_app_constructs_cdk",
     version="0.1.0",
-    description="A CDK Python app for deploying a Slack Chat App",
+    description="A CDK Python app for deploying a Slack Chat App and an OAuth 2.0 authorization flow service for sharing the Slack App",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Kay Hau",
