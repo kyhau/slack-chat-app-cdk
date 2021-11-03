@@ -6,7 +6,7 @@ This repo creates a Slack Chat App/bot that responds to messages when the app is
 
 If you want to use [Slack Commands](https://api.slack.com/interactivity/slash-commands), see another repo [kyhau/slack-command-app-cdk](https://github.com/kyhau/slack-command-app-cdk).
 
-![SlackApp-ThreadReply-01](doc/SlackApp-ThreadReply-01.png)
+![SlackApp-ThreadReply-01](docs/SlackApp-ThreadReply-01.png)
 
 This Slack App can handle requests triggered from a `app_mentions:read` event, which will take longer than [3 seconds](https://api.slack.com/events-api) to process, and posts the details back to the user using `chat:write` API.
 
@@ -23,7 +23,7 @@ This repo provides the source code for building
 
 ### Slack App Architecture
 
-![SlackApp-ArchitectureOverview](doc/SlackApp-ArchitectureOverview.png)
+![SlackApp-ArchitectureOverview](docs/SlackApp-ArchitectureOverview.png)
 
 1. An API Gateway to provide an endpoint to be invoked from a Slack Command.
 2. A Lambda Function [lambda/ImmediateResponse.py](lambda/ImmediateResponse.py) to perform authentication, some basic checks and send an intermediate response to Slack within 3 seconds (Slack requirement). This function invokes another Lambda function to to the request tasks (synchronously invocation for quick task; asynchronous invocation for long tasks).
@@ -34,7 +34,7 @@ This repo provides the source code for building
 
 ### OAuth 2.0 API Architecture
 
-![OAuth2API-ArchitectureOverview](doc/OAuth2API-ArchitectureOverview.png)
+![OAuth2API-ArchitectureOverview](docs/OAuth2API-ArchitectureOverview.png)
 
 1. An API Gateway to provide an endpoint as the Sharable URL in Slack.
 2. A Lambda Function [lambda/OAuth.py](lambda/OAuth.py) to perform OAuth 2.0 flow and turn the auth code into access token then store it in a DynamoDB table.
@@ -169,11 +169,11 @@ For details of Slack OAuth 2.0 v2 see
 
 2. Open the **Sharable URL** in the browser. You will be asked to allow the access "Add shortcuts and/or slash commands that people can use". Click **Allow**.
 
-   ![SlackAppInstall-01](doc/SlackAppInstall-01.png)
+   ![SlackAppInstall-01](docs/SlackAppInstall-01.png)
 
 3. On success of authenticating your request with the `app_id` and `team_id`, you should see
    > Installation request accepted and registration completed.
-   ![SlackAppInstall-02](doc/SlackAppInstall-02.png)
+   ![SlackAppInstall-02](docs/SlackAppInstall-02.png)
 
 4. Then in the channel you specified in previous step, you should see
    > added an integration to this channel: (you-app-name)
