@@ -40,7 +40,8 @@ def authenticate(token):
 
     try:
         expected_token = ssm_client.get_parameter(
-            Name=SLACK_VERIFICATION_TOKEN_SSM_PARAMETER_KEY, WithDecryption=True)["Parameter"]["Value"]
+            Name=SLACK_VERIFICATION_TOKEN_SSM_PARAMETER_KEY, WithDecryption=True
+        )["Parameter"]["Value"]
     except Exception as e:
         logging.error(f"Unable to retrieve data from parameter store: {e}")
         return False
@@ -71,13 +72,15 @@ def invoke_lambda(function_namme, payload_json, is_async):
     return lambda_client.invoke(
         FunctionName=function_namme,
         InvocationType="Event" if is_async else "RequestResponse",
-        Payload=payload_bytes_arr
+        Payload=payload_bytes_arr,
     )
 
 
 def get_bot_token(app_id, team_id):
     try:
-        return oauth_table.get_item(Key={"app_id": app_id, "team_id": team_id})["Item"]["access_token"]
+        return oauth_table.get_item(Key={"app_id": app_id, "team_id": team_id})["Item"][
+            "access_token"
+        ]
     except Exception as e:
         logging.error(e)
 
@@ -93,10 +96,15 @@ def call_slack_chat_post(channel_id, thread_ts, bot_token, response_text):
             ("token", bot_token),
             ("channel", channel_id),
             ("thread_ts", thread_ts),
-            ("text", response_text)
+            ("text", response_text),
         )
     ).encode("ascii")
-    resp = http.request("POST", SLACK_API_CHAT_POST_URL, body=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
+    resp = http.request(
+        "POST",
+        SLACK_API_CHAT_POST_URL,
+        body=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
     logging.info(resp.read())
 
 
@@ -122,12 +130,22 @@ def app_mention_handler(slack_msg):
         bot_token = get_bot_token(app_id, team_id)
 
         if authenticate(token) is False:
-            call_slack_chat_post(channel_id, thread_ts, bot_token, f"Sorry <@{user_id}>, an authentication error occurred. Please contact your admin.")
+            call_slack_chat_post(
+                channel_id,
+                thread_ts,
+                bot_token,
+                f"Sorry <@{user_id}>, an authentication error occurred. Please contact your admin.",
+            )
             return False
 
         result = authorize(app_id, channel_id, team_id)
         if result is not None:
-            call_slack_chat_post(channel_id, thread_ts, bot_token, f"Sorry <@{user_id}>, this app does not support this {result}.")
+            call_slack_chat_post(
+                channel_id,
+                thread_ts,
+                bot_token,
+                f"Sorry <@{user_id}>, this app does not support this {result}.",
+            )
             return False
 
         try:
@@ -135,7 +153,9 @@ def app_mention_handler(slack_msg):
         except Exception:
             text_msg = None
 
-        logging.info(f"{user_id} invoked {app_id} in {channel_id} with the following text: {text_msg}")
+        logging.info(
+            f"{user_id} invoked {app_id} in {channel_id} with the following text: {text_msg}"
+        )
 
         message = None
 
@@ -152,8 +172,10 @@ def app_mention_handler(slack_msg):
             resp = invoke_lambda(CHILD_ASYNC_FUNCTION_NAME, payload, is_async=True)
             if resp["ResponseMetadata"]["HTTPStatusCode"] not in [200, 201, 202]:
                 logging.error(resp)
-                message = f"<@{user_id}>, your request ({text_msg}) cannot be" \
+                message = (
+                    f"<@{user_id}>, your request ({text_msg}) cannot be"
                     " processed at the moment. Please try again later."
+                )
 
         else:
             message = f"Hello <@{user_id}>!"

@@ -1,6 +1,6 @@
 # slack-chat-app-cdk
 
-[![githubactions](https://github.com/kyhau/slack-chat-app-cdk/workflows/build-slackapp/badge.svg)](https://github.com/kyhau/slack-chat-app-cdk/actions)
+[![githubactions](https://github.com/kyhau/slack-chat-app-cdk/workflows/slackapp-build/badge.svg)](https://github.com/kyhau/slack-chat-app-cdk/actions/workflows/slackapp-build.yaml)
 
 This repo creates a Slack Chat App/bot that responds to messages when the app is mentioned (i.e. `@<app-name>`) and sends the response to the corresponding thread.
 
@@ -9,6 +9,8 @@ If you want to use [Slack Commands](https://api.slack.com/interactivity/slash-co
 ![SlackApp-ThreadReply-01](docs/SlackApp-ThreadReply-01.png)
 
 This Slack App can handle requests triggered from a `app_mentions:read` event, which will take longer than [3 seconds](https://api.slack.com/events-api) to process, and posts the details back to the user using `chat:write` API.
+
+All notable changes to this project will be documented in [CHANGELOG](./CHANGELOG.md).
 
 ---
 
