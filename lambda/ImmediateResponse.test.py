@@ -37,45 +37,35 @@ def mock_event(custom_data={}, channel="C1111111111"):
                         {
                             "type": "rich_text_section",
                             "elements": [
-                                {
-                                    "type": "user",
-                                    "user_id": "UB111111111"
-                                },
-                                {
-                                    "type": "text",
-                                    "text": " what\nline 2\nline 3"
-                                }
-                            ]
+                                {"type": "user", "user_id": "UB111111111"},
+                                {"type": "text", "text": " what\nline 2\nline 3"},
+                            ],
                         }
-                    ]
+                    ],
                 }
             ],
             "channel": channel,
-            "event_ts": "1634873264.005100"
+            "event_ts": "1634873264.005100",
         },
         "type": "event_callback",
         "event_id": "Ev02JGDEJTCN",
         "event_time": 1634873264,
-        "authed_users": [
-            "UB111111111"
-        ],
+        "authed_users": ["UB111111111"],
         "authorizations": [
             {
                 "enterprise_id": "null",
                 "team_id": "T1111111111",
                 "user_id": "UB111111111",
                 "is_bot": "true",
-                "is_enterprise_install": "false"
+                "is_enterprise_install": "false",
             }
         ],
         "is_ext_shared_channel": "false",
-        "event_context": "xxx"
+        "event_context": "xxx",
     }
     data.update(custom_data)
 
-    return {
-        "body": json.dumps(data)
-    }
+    return {"body": json.dumps(data)}
 
 
 def payload_in_bytes():
@@ -99,18 +89,21 @@ MOCK_LAMBDA_INVOKE_RESPONSE = {
 
 
 class TestFunction(unittest.TestCase):
-
     def test_lambda_handler_all_good(self):
-        with patch("ImmediateResponse.ssm_client.get_parameter", return_value={"Parameter": {"Value": "dummy-token"}}), \
-             patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, \
-             patch("ImmediateResponse.lambda_client.invoke") as mock_lambda_invoke:
-
+        with patch(
+            "ImmediateResponse.ssm_client.get_parameter",
+            return_value={"Parameter": {"Value": "dummy-token"}},
+        ), patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, patch(
+            "ImmediateResponse.lambda_client.invoke"
+        ) as mock_lambda_invoke:
             mock_ddb_get_item.return_value = {"Item": {"access_token": "dummy-bot-token"}}
             mock_lambda_invoke.return_value = MOCK_LAMBDA_INVOKE_RESPONSE
 
             ret = func.lambda_handler(mock_event(), None)
 
-            mock_ddb_get_item.assert_called_once_with(Key={"app_id": "APIID123456", "team_id": "T1111111111"})
+            mock_ddb_get_item.assert_called_once_with(
+                Key={"app_id": "APIID123456", "team_id": "T1111111111"}
+            )
 
             mock_lambda_invoke.assert_called_once_with(
                 FunctionName="Dummy-AsyncWorker",
@@ -121,97 +114,117 @@ class TestFunction(unittest.TestCase):
             self.assertDictEqual(ret, {"statusCode": 200})
 
     def test_lambda_handler_failed_invalid_token(self):
-        with patch("ImmediateResponse.ssm_client.get_parameter", return_value={"Parameter": {"Value": "dummy-token"}}), \
-             patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, \
-             patch("ImmediateResponse.call_slack_chat_post") as mock_chat_post:
-
+        with patch(
+            "ImmediateResponse.ssm_client.get_parameter",
+            return_value={"Parameter": {"Value": "dummy-token"}},
+        ), patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, patch(
+            "ImmediateResponse.call_slack_chat_post"
+        ) as mock_chat_post:
             mock_ddb_get_item.return_value = {"Item": {"access_token": "dummy-bot-token"}}
 
             ret = func.lambda_handler(mock_event({"token": "invalid-token"}), None)
 
-            mock_ddb_get_item.assert_called_once_with(Key={"app_id": "APIID123456", "team_id": "T1111111111"})
+            mock_ddb_get_item.assert_called_once_with(
+                Key={"app_id": "APIID123456", "team_id": "T1111111111"}
+            )
 
             mock_chat_post.assert_called_once_with(
                 "C1111111111",
                 "1634873264.005100",
                 "dummy-bot-token",
-                "Sorry <@U2222222222>, an authentication error occurred. Please contact your admin."
+                "Sorry <@U2222222222>, an authentication error occurred. Please contact your admin.",
             )
 
             self.assertDictEqual(ret, {"statusCode": 200})
 
     def test_lambda_handler_failed_no_bot_token(self):
-        with patch("ImmediateResponse.ssm_client.get_parameter", return_value={"Parameter": {"Value": "dummy-token"}}), \
-             patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, \
-             patch("ImmediateResponse.call_slack_chat_post") as mock_chat_post:
-
+        with patch(
+            "ImmediateResponse.ssm_client.get_parameter",
+            return_value={"Parameter": {"Value": "dummy-token"}},
+        ), patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, patch(
+            "ImmediateResponse.call_slack_chat_post"
+        ) as mock_chat_post:
             # No item found for that team_id
             mock_ddb_get_item.return_value = {"Item": None}
 
             ret = func.lambda_handler(mock_event(), None)
 
-            mock_ddb_get_item.assert_called_once_with(Key={"app_id": "APIID123456", "team_id": "T1111111111"})
+            mock_ddb_get_item.assert_called_once_with(
+                Key={"app_id": "APIID123456", "team_id": "T1111111111"}
+            )
 
             mock_chat_post.assert_not_called()
 
             self.assertDictEqual(ret, {"statusCode": 200})
 
     def test_lambda_handler_failed_invalid_app_id(self):
-        with patch("ImmediateResponse.ssm_client.get_parameter", return_value={"Parameter": {"Value": "dummy-token"}}), \
-             patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, \
-             patch("ImmediateResponse.call_slack_chat_post") as mock_chat_post:
-
+        with patch(
+            "ImmediateResponse.ssm_client.get_parameter",
+            return_value={"Parameter": {"Value": "dummy-token"}},
+        ), patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, patch(
+            "ImmediateResponse.call_slack_chat_post"
+        ) as mock_chat_post:
             mock_ddb_get_item.return_value = {"Item": {"access_token": "dummy-bot-token"}}
 
             ret = func.lambda_handler(mock_event({"api_app_id": "invalid-app-id"}), None)
 
-            mock_ddb_get_item.assert_called_once_with(Key={"app_id": "invalid-app-id", "team_id": "T1111111111"})
+            mock_ddb_get_item.assert_called_once_with(
+                Key={"app_id": "invalid-app-id", "team_id": "T1111111111"}
+            )
 
             mock_chat_post.assert_called_once_with(
                 "C1111111111",
                 "1634873264.005100",
                 "dummy-bot-token",
-                "Sorry <@U2222222222>, this app does not support this app ID invalid-app-id."
+                "Sorry <@U2222222222>, this app does not support this app ID invalid-app-id.",
             )
 
             self.assertDictEqual(ret, {"statusCode": 200})
 
     def test_lambda_handler_failed_invalid_team_id(self):
-        with patch("ImmediateResponse.ssm_client.get_parameter", return_value={"Parameter": {"Value": "dummy-token"}}), \
-             patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, \
-             patch("ImmediateResponse.call_slack_chat_post") as mock_chat_post:
-
+        with patch(
+            "ImmediateResponse.ssm_client.get_parameter",
+            return_value={"Parameter": {"Value": "dummy-token"}},
+        ), patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, patch(
+            "ImmediateResponse.call_slack_chat_post"
+        ) as mock_chat_post:
             mock_ddb_get_item.return_value = {"Item": {"access_token": "dummy-bot-token"}}
 
             ret = func.lambda_handler(mock_event({"team_id": "invalid-team-id"}), None)
 
-            mock_ddb_get_item.assert_called_once_with(Key={"app_id": "APIID123456", "team_id": "invalid-team-id"})
+            mock_ddb_get_item.assert_called_once_with(
+                Key={"app_id": "APIID123456", "team_id": "invalid-team-id"}
+            )
 
             mock_chat_post.assert_called_once_with(
                 "C1111111111",
                 "1634873264.005100",
                 "dummy-bot-token",
-                "Sorry <@U2222222222>, this app does not support this team ID invalid-team-id."
+                "Sorry <@U2222222222>, this app does not support this team ID invalid-team-id.",
             )
 
             self.assertDictEqual(ret, {"statusCode": 200})
 
     def test_lambda_handler_failed_invalid_channel_id(self):
-        with patch("ImmediateResponse.ssm_client.get_parameter", return_value={"Parameter": {"Value": "dummy-token"}}), \
-             patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, \
-             patch("ImmediateResponse.call_slack_chat_post") as mock_chat_post:
-
+        with patch(
+            "ImmediateResponse.ssm_client.get_parameter",
+            return_value={"Parameter": {"Value": "dummy-token"}},
+        ), patch("ImmediateResponse.oauth_table.get_item") as mock_ddb_get_item, patch(
+            "ImmediateResponse.call_slack_chat_post"
+        ) as mock_chat_post:
             mock_ddb_get_item.return_value = {"Item": {"access_token": "dummy-bot-token"}}
 
             ret = func.lambda_handler(mock_event(channel="invalid-channel-id"), None)
 
-            mock_ddb_get_item.assert_called_once_with(Key={"app_id": "APIID123456", "team_id": "T1111111111"})
+            mock_ddb_get_item.assert_called_once_with(
+                Key={"app_id": "APIID123456", "team_id": "T1111111111"}
+            )
 
             mock_chat_post.assert_called_once_with(
                 "invalid-channel-id",
                 "1634873264.005100",
                 "dummy-bot-token",
-                "Sorry <@U2222222222>, this app does not support this channel ID invalid-channel-id."
+                "Sorry <@U2222222222>, this app does not support this channel ID invalid-channel-id.",
             )
 
             self.assertDictEqual(ret, {"statusCode": 200})

@@ -1,5 +1,19 @@
-0.1.0 - 2021-11-01
-==================
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## 0.1.1 - 2023-09-02
+
+### Changed
+
+* Updated Lambda Runtime from 3.8 to 3.11.
+* Merged env_dev.json and settings_dev.json.
+
+
+## 0.1.0 - 2021-11-01
+
+### Added
+
 Initial version of Slack Chat App.
 
 The Slack App can handle requests triggered from a `app_mentions:read` event, which will take longer than [3 seconds](https://api.slack.com/events-api) to process, and posts the details back to the user using `chat:write` API.
