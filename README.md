@@ -1,6 +1,7 @@
 # slack-chat-app-cdk
 
 [![githubactions](https://github.com/kyhau/slack-chat-app-cdk/actions/workflows/slackapp-build.yaml/badge.svg)](https://github.com/kyhau/slack-chat-app-cdk/actions/workflows/slackapp-build.yaml)
+[![CodeQL](https://github.com/kyhau/slack-chat-app-cdk/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/kyhau/slack-chat-app-cdk/actions/workflows/codeql-analysis.yml)
 [![SecretsScan](https://github.com/kyhau/slack-chat-app-cdk/actions/workflows/secrets-scan.yml/badge.svg)](https://github.com/kyhau/slack-chat-app-cdk/actions/workflows/secrets-scan.yml)
 
 This repo creates a Slack Chat App/bot that responds to messages when the app is mentioned (i.e. `@<app-name>`) and sends the response to the corresponding thread.
