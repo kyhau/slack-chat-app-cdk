@@ -38,19 +38,18 @@ def put_data_to_dynamodb():
             elif k not in ["ok"]:
                 data[k] = v
 
-        table.put_item(
-            TableName=DDB_TABLE_NAME,
-            Item=data
-        )
+        table.put_item(TableName=DDB_TABLE_NAME, Item=data)
     except Exception as e:
         print(e)
 
 
 def get_item_from_dynamodb():
-    return table.get_item(Key={
-        "app_id": APP_ID,
-        "team_id": TEAM_ID,
-    })["Item"]
+    return table.get_item(
+        Key={
+            "app_id": APP_ID,
+            "team_id": TEAM_ID,
+        }
+    )["Item"]
 
 
 def main():

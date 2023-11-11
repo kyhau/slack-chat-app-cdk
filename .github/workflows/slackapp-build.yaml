@@ -1,4 +1,4 @@
-name: build-slackapp
+name: slackapp-build
 
 on: [push]
 
@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: [3.11]
 
     steps:
     - name: Checkout source
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -26,7 +26,7 @@ jobs:
 
     - name: Run flake8 lint, unit tests
       run: |
-        flake8 --ignore E501,F541,W605 lambda/ slack_app_constructs_cdk/ scripts/*.py
+        flake8 --ignore E501,F541,W503,W605 lambda/ slack_app_constructs_cdk/ scripts/*.py
         echo "INFO: Run unit tests"
         python lambda/AsyncWorker.test.py
         python lambda/ImmediateResponse.test.py

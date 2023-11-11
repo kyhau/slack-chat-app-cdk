@@ -14,13 +14,17 @@ logging.getLogger().setLevel(logging.INFO)
 SLACK_API_CHAT_POST_URL = "https://slack.com/api/chat.postMessage"
 OAUTH_DDB_TABLE_NAME = os.environ.get("OAuthDynamoDBTable")
 
-oauth_table = boto3.resource("dynamodb", region_name=os.environ.get("AWS_REGION", "ap-southeast-2")).Table(OAUTH_DDB_TABLE_NAME)
+oauth_table = boto3.resource(
+    "dynamodb", region_name=os.environ.get("AWS_REGION", "ap-southeast-2")
+).Table(OAUTH_DDB_TABLE_NAME)
 http = urllib3.PoolManager()
 
 
 def get_bot_token(app_id, team_id):
     try:
-        return oauth_table.get_item(Key={"app_id": app_id, "team_id": team_id})["Item"]["access_token"]
+        return oauth_table.get_item(Key={"app_id": app_id, "team_id": team_id})["Item"][
+            "access_token"
+        ]
     except Exception as e:
         logging.error(e)
 
@@ -31,10 +35,15 @@ def call_slack_chat_post(channel_id, thread_ts, bot_token, response_text):
             ("token", bot_token),
             ("channel", channel_id),
             ("thread_ts", thread_ts),
-            ("text", response_text)
+            ("text", response_text),
         )
     ).encode("ascii")
-    resp = http.request("POST", SLACK_API_CHAT_POST_URL, body=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
+    resp = http.request(
+        "POST",
+        SLACK_API_CHAT_POST_URL,
+        body=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
     logging.info(resp.read())
 
 
