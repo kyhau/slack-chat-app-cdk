@@ -13,7 +13,7 @@ def get_channel_ids(settings):
     ret = []
     for v in settings["access"].values():
         if v.get("channels"):
-            ret.extend(v["channels"].keys())
+            ret.extend(v["channels"].values())
     return ret
 
 
